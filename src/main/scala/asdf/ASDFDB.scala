@@ -17,8 +17,8 @@ object ASDFDB {
     }
   }
 
-  case class Insert[A]   private[ASDFDB] (path: Path, value: ASDF, cont: () => A) extends Action[A]
-  case class FindOne[A]  private[ASDFDB] (path: Path, cont: Option[ASDF] => A) extends Action[A]
+  case class Insert[A] private[ASDFDB] (path: Path, value: ASDF, cont: () => A) extends Action[A]
+  case class FindOne[A] private[ASDFDB] (path: Path, cont: Option[ASDF] => A) extends Action[A]
   //case class Delete[A]   private[ASDFDB] (path: Path, cont: () => A) extends Action[A]
 
   type Program[A] = Free[Action, A]
@@ -28,7 +28,7 @@ object ASDFDB {
   //def delete(path: Path): Program[Unit] = Suspend(Delete(path, () => Return(())))
 }
 
-/** 
+/**
  * Newtype wrapper around a list of path elements.
  */
 case class Path(elements: List[Path.Element]) extends AnyVal
@@ -46,10 +46,10 @@ object AType {
   case object Dict extends AType
   case object Seq extends AType
   case object Value extends AType
-  case object Missing extends AType 
+  case object Missing extends AType
 
   def forValue(v: ASDF) = v match {
-    case ABool(_, _) | ANum(_, _) | AStr(_, _)  => Value
+    case ABool(_, _) | ANum(_, _) | AStr(_, _) => Value
     case ASeq(_, _) => Seq
     case ADict(_, _) => Dict
   }

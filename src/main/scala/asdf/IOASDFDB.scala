@@ -1,6 +1,6 @@
 package asdf
 
-import scalaz.{Monad, Free, EitherT, ~>}
+import scalaz.{ Monad, Free, EitherT, ~> }
 import scalaz.Free._
 import scalaz.effect._
 import scalaz.syntax.monad._

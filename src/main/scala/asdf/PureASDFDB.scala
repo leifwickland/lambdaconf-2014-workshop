@@ -1,6 +1,6 @@
 package asdf
 
-import scalaz.{Free, \/, \/-, -\/}
+import scalaz.{ Free, \/, \/-, -\/ }
 import scalaz.Free._
 import scalaz.syntax.monad._
 import scalaz.syntax.std.boolean._
@@ -17,12 +17,12 @@ object PureASDFDB {
     program match {
       case Return(a) => ???
 
-      case Suspend(FindOne(path, cont)) => 
-	runPure(??? : ASDF)(??? : Program[A])
+      case Suspend(FindOne(path, cont)) =>
+        runPure(??? : ASDF)(??? : Program[A])
 
       case Suspend(Insert(path, value, cont)) => ???
-        
-      case Gosub(fa, cont) => 
+
+      case Gosub(fa, cont) =>
         // we have to fully evaluate fa before continuing
         fa() match {
           case Return(a) => ???
@@ -45,7 +45,7 @@ object PureASDFDB {
    * being inserted; for example, if a path indicates the presence of an ASeq
    * where there is already a primitive value or an ADict.
    *
-   * For ease of * implementation, this is not trampolined so it will fail on 
+   * For ease of * implementation, this is not trampolined so it will fail on
    * large trees.
    */
   private def insert(into: ASDF, at: Path, value: ASDF): Err \/ ASDF = {
@@ -53,14 +53,14 @@ object PureASDFDB {
       (path, db) match {
         case (Path(Nil), v) => \/.right(v)
 
-        case (Path((fld @ Field(n)) :: xs), ADict(d, meta)) => 
+        case (Path((fld @ Field(n)) :: xs), ADict(d, meta)) =>
           d.get(n) match {
             case Some(child) =>
               rec(fld :: trace, Path(xs), child) map { v =>
                 aDict(d + (n -> v), meta)
               }
 
-            case None => 
+            case None =>
               for {
                 v <- xs.headOption match {
                   case Some(Field(_)) => rec(fld :: trace, Path(xs), ADict.empty())
@@ -72,7 +72,7 @@ object PureASDFDB {
               }
           }
 
-        case (Path((idx @ Index(i)) :: xs), ASeq(vx, meta)) => 
+        case (Path((idx @ Index(i)) :: xs), ASeq(vx, meta)) =>
           val (prefix, suffix) = vx.splitAt(i)
           if (prefix.size < i) {
             \/.left(pathMismatch(Path((idx :: trace).reverse), AType.Value, AType.Missing))
@@ -83,7 +83,7 @@ object PureASDFDB {
                   aSeq(prefix ++: v +: suffix.drop(1), meta)
                 }
 
-              case None => 
+              case None =>
                 for {
                   v <- xs.headOption match {
                     case Some(Field(_)) => rec(idx :: trace, Path(xs), ADict.empty())
@@ -96,7 +96,7 @@ object PureASDFDB {
             }
           }
 
-        case (Path(x :: xs), v) => 
+        case (Path(x :: xs), v) =>
           \/.left(pathMismatch(Path((x :: trace).reverse), x.atype, AType.forValue(v)))
       }
     }
@@ -107,7 +107,7 @@ object PureASDFDB {
   /**
    * A simple recursive traversal of the tree in the Option monad. For ease of
    * implementation, this is not trampolined so it will fail on large trees.
-   */ 
+   */
   private def findOne(at: Path, in: ASDF): Option[ASDF] = (at, in) match {
     case (Path(Nil), v) => Some(v)
     case (Path(Index(i) :: xs), ASeq(v, _)) => v.lift(i) flatMap { findOne(Path(xs), _) }
@@ -115,5 +115,4 @@ object PureASDFDB {
     case _ => None
   }
 }
-
 

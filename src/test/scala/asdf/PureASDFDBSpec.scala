@@ -75,7 +75,7 @@ class PureASDFDBSpec extends Specification {
       } yield result
 
       val cDict = aDict(Map(a -> aStr("found c-a!"), b -> aStr("found c-b")))
-      val trueCase  = aDict(Map(a -> aDict(Map(b -> aBool(true))), c -> cDict))
+      val trueCase = aDict(Map(a -> aDict(Map(b -> aBool(true))), c -> cDict))
       val falseCase = aDict(Map(a -> aStr("nada"), c -> cDict))
 
       runPure(trueCase)(program) must beLike {
@@ -91,12 +91,12 @@ class PureASDFDBSpec extends Specification {
       val program = for {
         _ <- insert(simpleObjectPath, ASeq.empty())
         _ <- insert(objectCompositePath, aBool(true))
-        v <- findOne(objectCompositePath) 
+        v <- findOne(objectCompositePath)
         root <- findOne(Path(Nil))
       } yield (root, v)
 
       runPure(ADict.empty())(program) must beLike {
-        case \/-((Some(root), Some(v))) => 
+        case \/-((Some(root), Some(v))) =>
           v must_== aBool(true)
           root must_== aDict(Map(a -> aDict(Map(b -> aSeq(Vector(v))))))
       }

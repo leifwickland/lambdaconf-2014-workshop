@@ -16,10 +16,10 @@ sealed trait ASDF {
 
 object ASDF {
   case class ABool private[ASDF] (b: Boolean, meta: Option[ASDF]) extends ASDF
-  case class ANum  private[ASDF] (r: Real, meta: Option[ASDF]) extends ASDF
-  case class AStr  private[ASDF] (s: String, meta: Option[ASDF]) extends ASDF
+  case class ANum private[ASDF] (r: Real, meta: Option[ASDF]) extends ASDF
+  case class AStr private[ASDF] (s: String, meta: Option[ASDF]) extends ASDF
 
-  case class ASeq  private[ASDF] (v: Vector[ASDF], meta: Option[ASDF]) extends ASDF
+  case class ASeq private[ASDF] (v: Vector[ASDF], meta: Option[ASDF]) extends ASDF
   object ASeq {
     def empty(meta: Option[ASDF] = None): ASDF = ASeq(Vector(), meta)
   }
@@ -31,7 +31,7 @@ object ASDF {
     case class Key private[ADict] (id: String) extends AnyVal
 
     /**
-     * Restrictive constructor for keys; we will want to use dotted and 
+     * Restrictive constructor for keys; we will want to use dotted and
      * bracketed path syntax for accessing values, so exclude these characters
      * from keys.
      */
